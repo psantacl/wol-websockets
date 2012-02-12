@@ -32,37 +32,40 @@ Called when a new message has be received from the client
 
 Called after the websocket handshake has been completed and the HTTP connection
 upgraded.  Useful for providing newly connected clients with
-initialiation instructions.
+initialization instructions.
 
 :channel-connected (fn [netty-context netty-event] )
 
-Called by netty in the upstream pipeline on a channel has been opened,
+Called by netty in the upstream pipeline on a channel which has been opened,
 bound to a local address, and connected to a remote address.  This
-code will be executed in a Boss thread and such as must be performant
-as it will block dispatching to workers.  Practically, speaking if you
-aren't familiar with Netty, you probably do not care about it.
+code will be executed in a Boss thread and as such  must be performant
+as it will block dispatching to workers.  Practically speaking, if you
+aren't familiar with Netty, you probably do not care about this.
 
 
 :channel-disconnected (fn [netty-context netty-event] )
 
-Called by netty when a channel has disconnected from its remote peer.Practically, speaking if you
+Called by netty when a channel has disconnected from its remote peer. Practically speaking, if you
 aren't familiar with Netty, you probably do not care about it.
 
 
 
-##Sending Messages to clients
-*web-sockets* : Wol-Websockets  maintains an atom of all currently
+##Sending Messages to Clients
+*web-sockets* : WOL-Websockets  maintains an atom of all currently
 connected clients* in server.clj
 
-*web-socket* : Additional a binding is setup for your message-received
+*web-socket* : Additionally a binding is setup for your message-received
  handler, granting access to the underlying netty channel. 
-eg. :message-receive (fn [str-message-from-websocket] 
-                         (.write *web-socket* (TextWebSocketFrame. "some message))
-                      
+ eg. :message-receive (fn [str-message-from-websocket] 
+                         (.write *web-socket* (TextWebSocketFrame. "some message"))
+
 
 The convenience functions ws-respond, ws-broadcast-others, and
 ws-broadcast-all exist for your benefit and automatically make use of
 the above Vars.
+ eg. :message-receive (fn [str-message-from-websocket] 
+                         (ws-response "some message"))
+
 
 ## License
 
