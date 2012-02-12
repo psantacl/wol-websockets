@@ -64,7 +64,7 @@ The convenience functions ws-respond, ws-broadcast-others, and
 ws-broadcast-all exist for your benefit and automatically make use of
 the above Vars.
  eg. :message-receive (fn [str-message-from-websocket] 
-                         (ws-response "some message"))
+                         (ws-respond "some message"))
 
 
 ## License
