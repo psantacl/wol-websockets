@@ -1,17 +1,70 @@
 # wol-websockets
 
-FIXME: write description
+A thin Clojure Wrapper over Netty's serverside Websocket
+implementation. Because websockets remain in such dramatic flux, I will strive to
+keep this project based up on the most recent Netty build
+available("4.0.0.Alpha1-SNAPSHOT" as of this writing), ensuring that
+largest number of Websocket versions are supported.
+
+Essentially, I became sick of having to depend on additional libraries
+to utilized WebSockets.  Ultimately, most sane jvm frameworks
+themselves depend on Netty, so why not just cut out the middle man?
 
 ## Usage
+(server/start-netty-server
+           {:message-received     wsocket-receive
+	    :channel-connected    channel-disconnected
+	    :channel-disconnected    channel-disconnected
+            :post-ws-handshake    (make-post-ws-handshake)
+            :port 8081})
 
-FIXME: write
+The port argument determines the LISTEN port of the ws endpoint while
+the remaining key/values are devoted to callbacks. All callbacks
+besides :message-received are optional.
 
-## Installation
+:message-receive (fn [str-message-from-websocket] )
 
-FIXME: write
+Called when a new message has be received from the client
+
+:post-ws-handshake  (reify io.netty.channel.ChannelFutureListener
+		      (operationComplete [this future]
+		        (respond-ws "chicken" world)))
+
+Called after the websocket handshake has been completed and the HTTP connection
+upgraded.  Useful for providing newly connected clients with
+initialiation instructions.
+
+:channel-connected (fn [netty-context netty-event] )
+
+Called by netty in the upstream pipeline on a channel has been opened,
+bound to a local address, and connected to a remote address.  This
+code will be executed in a Boss thread and such as must be performant
+as it will block dispatching to workers.  Practically, speaking if you
+aren't familiar with Netty, you probably do not care about it.
+
+
+:channel-disconnected (fn [netty-context netty-event] )
+
+Called by netty when a channel has disconnected from its remote peer.Practically, speaking if you
+aren't familiar with Netty, you probably do not care about it.
+
+
+
+##Sending Messages to clients
+*web-sockets* : Wol-Websockets  maintains an atom of all currently
+connected clients* in server.clj
+
+*web-socket* : Additional a binding is setup for your message-received
+ handler, granting access to the underlying netty channel. 
+eg. :message-receive (fn [str-message-from-websocket] 
+                         (.write *web-socket* (TextWebSocketFrame. "some message))
+                      
+
+The convenience functions ws-respond, ws-broadcast-others, and
+ws-broadcast-all exist for your benefit and automatically make use of
+the above Vars.
 
 ## License
 
-Copyright (C) 2010 FIXME
+Information wants to be free.
 
-Distributed under the Eclipse Public License, the same as Clojure.
