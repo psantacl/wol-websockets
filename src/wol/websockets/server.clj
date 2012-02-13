@@ -54,8 +54,13 @@
                                             (if (nil? @handshaker)
                                               (.sendUnsupportedWebSocketVersionResponse ws-factory (.getChannel ctx))
                                               (let [handshake-future (.handshake @handshaker (.getChannel ctx) req)]
-                                                (and post-ws-handshake 
-                                                     (.addListener handshake-future post-ws-handshake)))))))        
+                                                (and post-ws-handshake
+                                                     (.addListener handshake-future
+                                                                   (reify ChannelFutureListener
+                                                                     (operationComplete [this future]
+                                                                       (binding [*web-socket* (.getChannel future)]
+                                                                         (post-ws-handshake)))))))))))
+        
         handle-web-socket-event   (fn [ctx frame]
                                     (if  (instance?  CloseWebSocketFrame frame)
                                       (do
