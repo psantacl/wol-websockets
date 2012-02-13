@@ -2,13 +2,13 @@
 
 A thin Clojure Wrapper over Netty's serverside Websocket
 implementation. Because websockets remain in such dramatic flux, I will strive to
-keep this project based up on the most recent Netty build
+keep this project based on the most recent Netty build
 available("4.0.0.Alpha1-SNAPSHOT" as of this writing), ensuring that
 largest number of Websocket versions are supported.
 
 Essentially, I became sick of having to depend on additional libraries
-to utilized WebSockets.  Ultimately, most sane jvm frameworks
-themselves depend on Netty, so why not just cut out the middle man?
+to utilize WebSockets.  Ultimately, most sane jvm frameworks
+themselves utilize  Netty, so why not just cut out the middle man?
 
 ## Usage
 (server/start-netty-server
