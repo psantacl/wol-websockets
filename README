@@ -22,17 +22,18 @@ The port argument determines the LISTEN port of the ws endpoint while
 the remaining key/values are devoted to callbacks. All callbacks
 besides :message-received are optional.
 
-:message-receive (fn [str-message-from-websocket] )
+:message-received (fn [str-message-from-websocket] )
 
 Called when a new message has be received from the client
 
-:post-ws-handshake  (reify io.netty.channel.ChannelFutureListener
-		      (operationComplete [this future]
-		        (respond-ws "chicken" world)))
+
+:post-ws-handshake   (fn []
+		        (ws-respond "welcome new client.  here is your initialization configuration" ))
 
 Called after the websocket handshake has been completed and the HTTP connection
 upgraded.  Useful for providing newly connected clients with
 initialization instructions.
+
 
 :channel-connected (fn [netty-context netty-event] )
 
@@ -49,10 +50,8 @@ Called by netty when a channel has disconnected from its remote peer. Practicall
 aren't familiar with Netty, you probably do not care about it.
 
 
-
 ##Sending Messages to Clients
-*web-sockets* : WOL-Websockets  maintains an atom of all currently
-connected clients* in server.clj
+*web-sockets* : WOL-Websockets  maintains an atom of all currently connected clients in server.clj
 
 *web-socket* : Additionally a binding is setup for your message-received
  handler, granting access to the underlying netty channel. 
@@ -66,6 +65,17 @@ the above Vars.
  eg. :message-receive (fn [str-message-from-websocket] 
                          (ws-respond "some message"))
 
+
+(ws-respond some-string) : Send a WebSocket response over the Netty channel
+ currently bound to *web-socket* 
+
+(ws-broadcast-others some-string) : Transmit a message to all clients
+OTHER than the one currently bound to *web-socket*.  Useful for
+informing all clients about the actions taken by one.
+
+(ws-broadcast-all some-string) : Transmit a message to ALL clients.
+Need not be called in the message-receive handler as the *web-socket*
+binding is ignored. 
 
 ## License
 
